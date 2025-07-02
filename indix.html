@@ -1,0 +1,2050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Smartpad Pro: Secure note-taking with calculator, PIN authentication, and media support">
+  <meta name="author" content="xAI">
+  <title>Smartpad - Ultimate Pro Edition</title>
+  <!-- External Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
+  <!-- External Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@4.0.12/marked.min.js"></script>
+  <style>
+    /* General Styling */
+    body {
+      font-family: 'Roboto', sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      color: #ecf0f1;
+      transition: background 0.3s, color 0.3s;
+    }
+    body.dark-theme {
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    }
+    body.light-theme {
+      background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+      color: #333;
+    }
+    body.blue-nebula {
+      background: linear-gradient(135deg, #0a1d37 0%, #184e77 100%);
+    }
+    body.emerald-glow {
+      background: linear-gradient(135deg, #0a3d2e 0%, #1a8c6a 100%);
+    }
+    body.amethyst-dream {
+      background: linear-gradient(135deg, #2e1a47 0%, #6b3e8e 100%);
+    }
+
+    /* Navigation Bar */
+    .main-nav {
+      background: rgba(20, 30, 48, 0.9);
+      backdrop-filter: blur(10px);
+      padding: 1rem;
+    }
+    .light-theme .main-nav {
+      background: rgba(200, 200, 200, 0.9);
+      color: #333;
+    }
+    .blue-nebula .main-nav {
+      background: rgba(10, 29, 55, 0.9);
+    }
+    .emerald-glow .main-nav {
+      background: rgba(10, 61, 46, 0.9);
+    }
+    .amethyst-dream .main-nav {
+      background: rgba(46, 26, 71, 0.9);
+    }
+    .nav-brand {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.5rem;
+      color: #ecf0f1;
+    }
+    .light-theme .nav-brand {
+      color: #333;
+    }
+
+    /* Glassmorphism Effect */
+    .glass-effect {
+      background: rgba(44, 62, 80, 0.3);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
+    .light-theme .glass-effect {
+      background: rgba(220, 220, 220, 0.5);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    .blue-nebula .glass-effect {
+      background: rgba(24, 78, 119, 0.3);
+    }
+    .emerald-glow .glass-effect {
+      background: rgba(26, 140, 106, 0.3);
+    }
+    .amethyst-dream .glass-effect {
+      background: rgba(107, 62, 142, 0.3);
+    }
+
+    /* Form Inputs */
+    .form-input {
+      background: rgba(44, 62, 80, 0.5);
+      border: none;
+      color: #ecf0f1;
+    }
+    .light-theme .form-input {
+      background: rgba(255, 255, 255, 0.8);
+      color: #333;
+      border: 1px solid #ccc;
+    }
+    .blue-nebula .form-input {
+      background: rgba(24, 78, 119, 0.5);
+    }
+    .emerald-glow .form-input {
+      background: rgba(26, 140, 106, 0.5);
+    }
+    .amethyst-dream .form-input {
+      background: rgba(107, 62, 142, 0.5);
+    }
+    .form-input:focus {
+      background: rgba(44, 62, 80, 0.7);
+      color: #ecf0f1;
+      box-shadow: none;
+      border-color: #3498db;
+    }
+    .light-theme .form-input:focus {
+      background: #fff;
+      border-color: #007bff;
+    }
+
+    /* Containers */
+    .pin-form, .auth-form, .calculator-container, .notepad-container, .profile-container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+
+    /* Calculator Styling */
+    .calculator-display {
+      background: rgba(20, 30, 48, 0.8);
+      border-radius: 10px;
+      min-height: 100px;
+      color: #ecf0f1;
+      font-size: 2rem;
+    }
+    .light-theme .calculator-display {
+      background: rgba(220, 220, 220, 0.8);
+      color: #333;
+    }
+    .blue-nebula .calculator-display {
+      background: rgba(10, 29, 55, 0.8);
+    }
+    .emerald-glow .calculator-display {
+      background: rgba(10, 61, 46, 0.8);
+    }
+    .amethyst-dream .calculator-display {
+      background: rgba(46, 26, 71, 0.8);
+    }
+    .calc-btn {
+      font-size: 1.2rem;
+      transition: transform 0.1s;
+      background: rgba(44, 62, 80, 0.8);
+      color: #ecf0f1;
+    }
+    .calc-btn:active {
+      transform: scale(0.95);
+    }
+    .light-theme .calc-btn {
+      background: rgba(200, 200, 200, 0.8);
+      color: #333;
+    }
+
+    /* Notepad Styling */
+    .note-editor {
+      min-height: 300px;
+      resize: vertical;
+      background: rgba(20, 30, 48, 0.5);
+      color: #ecf0f1;
+      border: none;
+      width: 100%;
+    }
+    .light-theme .note-editor {
+      background: rgba(220, 220, 220, 0.8);
+      color: #333;
+    }
+    .blue-nebula .note-editor {
+      background: rgba(10, 29, 55, 0.5);
+    }
+    .emerald-glow .note-editor {
+      background: rgba(10, 61, 46, 0.5);
+    }
+    .amethyst-dream .note-editor {
+      background: rgba(46, 26, 71, 0.5);
+    }
+    .media-preview, .recording-preview {
+      max-width: 150px;
+      margin: 5px;
+      border-radius: 5px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .note-card, .recording-card {
+      background: rgba(20, 30, 48, 0.5);
+      border: none;
+      color: #ecf0f1;
+    }
+    .light-theme .note-card, .light-theme .recording-card {
+      background: rgba(220, 220, 220, 0.8);
+      color: #333;
+    }
+    .blue-nebula .note-card, .blue-nebula .recording-card {
+      background: rgba(10, 29, 55, 0.5);
+    }
+    .emerald-glow .note-card, .emerald-glow .recording-card {
+      background: rgba(10, 61, 46, 0.5);
+    }
+    .amethyst-dream .note-card, .amethyst-dream .recording-card {
+      background: rgba(46, 26, 71, 0.5);
+    }
+    .note-card:hover, .recording-card:hover {
+      background: rgba(44, 62, 80, 0.7);
+    }
+    .light-theme .note-card:hover, .light-theme .recording-card:hover {
+      background: rgba(200, 200, 200, 0.9);
+    }
+
+    /* Progress Bar */
+    .progress {
+      height: 10px;
+      background: rgba(44, 62, 80, 0.5);
+    }
+    .light-theme .progress {
+      background: rgba(200, 200, 200, 0.5);
+    }
+
+    /* Avatar */
+    .user-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #3498db;
+    }
+
+    /* Accessibility */
+    [aria-hidden="true"] {
+      display: none;
+    }
+    .focusable:focus {
+      outline: 2px solid #3498db;
+      outline-offset: 2px;
+    }
+
+    /* Additional Notepad Styling */
+    .badge {
+      font-size: 0.8rem;
+      padding: 0.4em 0.6em;
+    }
+    .sidebar-hidden {
+      display: none;
+    }
+    @media (max-width: 768px) {
+      .sidebar-hidden {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body class="dark-theme">
+  <!-- Splash Screen -->
+  <div id="splashScreen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #2c3e50; display: flex; justify-content: center; align-items: center; z-index: 9999;">
+    <div class="text-center">
+      <h1 style="font-size: 3rem; color: #ecf0f1; font-family: 'Orbitron', sans-serif;">Smartpad</h1>
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Modal -->
+  <div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content glass-effect">
+        <div class="modal-header">
+          <h5 class="modal-title" id="notificationModalLabel">Notification</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="notificationMessage"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg main-nav" aria-label="Main navigation">
+    <div class="container-fluid">
+      <a class="navbar-brand nav-brand" href="#">
+        <i class="bi bi-lock-fill"></i> Smartpad Pro
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" data-bs-toggle="tooltip" title="Menu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link focusable" href="#" onclick="showSection('calculator')" tabindex="0">
+              <i class="bi bi-calculator"></i> Calculator
+            </a>
+          </li>
+          <li class="nav-item dropdown" id="userMenu" style="display: none;">
+            <a class="nav-link dropdown-toggle focusable" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" tabindex="0">
+              <i class="bi bi-person-circle"></i> <span id="userName"></span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end glass-effect">
+              <li><a class="dropdown-item focusable" href="#" onclick="showSection('profile')" tabindex="0">Profile</a></li>
+              <li><a class="dropdown-item focusable" href="#" onclick="showSection('notepad')" tabindex="0">Notepad</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger focusable" href="#" onclick="logout()" tabindex="0">Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Calculator Section (Initial Interface) -->
+  <section id="calculatorSection" class="calculator-container glass-effect p-3" aria-label="Scientific Calculator">
+    <div class="card glass-effect">
+      <div class="card-body">
+        <div class="calculator-display d-flex flex-column p-3 mb-3">
+          <div class="text-muted fs-6">Scientific Calculator <span id="memoryIndicator" class="ms-2"></span></div>
+          <div id="display" class="mt-auto text-end" aria-live="polite">0</div>
+        </div>
+        <div class="row g-2">
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="handleScientific('sin')" tabindex="0">sin</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="handleScientific('cos')" tabindex="0">cos</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="handleScientific('tan')" tabindex="0">tan</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="handleScientific('log')" tabindex="0">log</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="clearDisplay()" tabindex="0">C</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="backspace()" tabindex="0">←</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="handleScientific('sqrt')" tabindex="0">√</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="handleScientific('pow')" tabindex="0">x^y</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="appendNumber('7')" tabindex="0">7</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="appendNumber('8')" tabindex="0">8</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="appendNumber('9')" tabindex="0">9</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="appendOperator('/')" tabindex="0">÷</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="appendNumber('4')" tabindex="0">4</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="appendNumber('5')" tabindex="0">5</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="appendNumber('6')" tabindex="0">6</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="appendOperator('*')" tabindex="0">×</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="appendNumber('1')" tabindex="0">1</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="appendNumber('2')" tabindex="0">2</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="appendNumber('3')" tabindex="0">3</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="appendOperator('-')" tabindex="0">-</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="appendNumber('0')" tabindex="0">0</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="appendNumber('.')" tabindex="0">.</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="calculate()" tabindex="0">=</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="appendOperator('+')" tabindex="0">+</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="memoryClear()" tabindex="0">MC</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="memoryRecall()" tabindex="0">MR</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="memoryAdd()" tabindex="0">M+</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="memorySubtract()" tabindex="0">M-</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="handleScientific('exp')" tabindex="0">e^x</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="handleScientific('pow10')" tabindex="0">10^x</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="handleScientific('ln')" tabindex="0">ln</button></div>
+          <div class="col-3"><button class="btn calc-btn w-100 focusable" onclick="appendNumber(Math.PI.toString())" tabindex="0">π</button></div>
+        </div>
+        <div class="mt-3">
+          <button class="btn btn-primary w-100 focusable" onclick="showSection('pin')" data-bs-toggle="tooltip" title="Access secure features" tabindex="0">
+            <i class="bi bi-key"></i> Enter PIN
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PIN Entry Section -->
+  <section id="pinSection" class="pin-form glass-effect" style="display: none;" aria-label="PIN Entry">
+    <h3 class="text-center mb-4">Enter 4-Digit PIN</h3>
+    <form id="pinForm">
+      <div class="mb-3">
+        <input type="text" class="form-control form-input focusable" name="pin" placeholder="Enter PIN" maxlength="4" pattern="\d{4}" required data-bs-toggle="tooltip" title="Enter a 4-digit PIN" aria-label="4-digit PIN" tabindex="0">
+      </div>
+      <button type="submit" class="btn btn-primary w-100 focusable" tabindex="0">
+        <span id="pinSubmitSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+        Submit PIN
+      </button>
+    </form>
+    <p id="pinError" class="text-danger text-center mt-3" style="display: none;" aria-live="assertive"></p>
+    <div class="text-center mt-3">
+      <button class="btn btn-link focusable" onclick="resetPin()" data-bs-toggle="tooltip" title="Admin-only feature" tabindex="0">Reset PIN (Admin)</button>
+    </div>
+  </section>
+
+  <!-- Authentication Section -->
+  <section id="authSection" class="auth-form glass-effect" style="display: none;" aria-label="Authentication">
+    <ul class="nav nav-tabs mb-4" id="authTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active focusable" id="login-tab" data-bs-toggle="tab" data-bs-target="#login" type="button" aria-selected="true" tabindex="0">Login</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link focusable" id="register-tab" data-bs-toggle="tab" data-bs-target="#register" type="button" aria-selected="false" tabindex="0">Register</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link focusable" id="otp-tab" data-bs-toggle="tab" data-bs-target="#otp" type="button" disabled aria-selected="false" tabindex="0">OTP Verification</button>
+      </li>
+    </ul>
+    <div class="tab-content">
+      <div class="tab-pane fade show active" id="login" role="tabpanel" aria-labelledby="login-tab">
+        <form id="loginForm">
+          <div class="mb-3">
+            <input type="text" class="form-control form-input focusable" name="username" placeholder="Username" required aria-label="Username" tabindex="0">
+          </div>
+          <div class="mb-3">
+            <input type="password" class="form-control form-input focusable" name="password" placeholder="Password" required data-bs-toggle="popover" data-bs-content="Password must be at least 8 characters long." aria-label="Password" tabindex="0">
+          </div>
+          <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input focusable" id="enable2FA" name="enable2FA" tabindex="0">
+            <label class="form-check-label" for="enable2FA">Enable Two-Factor Authentication</label>
+          </div>
+          <button type="submit" class="btn btn-primary w-100 focusable" tabindex="0">
+            <span id="loginSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+            Sign In
+          </button>
+        </form>
+        <hr class="my-3">
+        <div class="d-grid gap-2">
+          <button class="btn btn-primary focusable" onclick="loginWithFacebook()" tabindex="0">Login with Facebook</button>
+          <button class="btn btn-danger focusable" onclick="loginWithGoogle()" tabindex="0">Login with Google</button>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="register" role="tabpanel" aria-labelledby="register-tab">
+        <form id="registerForm">
+          <div class="mb-3">
+            <input type="text" class="form-control form-input focusable" name="username" placeholder="Username" required aria-label="Username" tabindex="0">
+          </div>
+          <div class="mb-3">
+            <input type="email" class="form-control form-input focusable" name="email" placeholder="Email" required aria-label="Email" tabindex="0">
+          </div>
+          <div class="mb-3">
+            <input type="tel" class="form-control form-input focusable" name="contact" placeholder="Contact Number" required aria-label="Contact Number" tabindex="0">
+          </div>
+          <div class="mb-3">
+            <input type="password" class="form-control form-input focusable" name="password" placeholder="Password" required id="regPassword" aria-label="Password" tabindex="0">
+            <div id="passwordStrength" class="text-muted small mt-1" aria-live="polite"></div>
+          </div>
+          <div class="mb-3">
+            <input type="password" class="form-control form-input focusable" name="confirmPassword" placeholder="Confirm Password" required aria-label="Confirm Password" tabindex="0">
+          </div>
+          <div class="mb-3">
+            <select class="form-select form-input focusable" name="role" required aria-label="Role" tabindex="0">
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-success w-100 focusable" tabindex="0">
+            <span id="registerSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+            Create Account
+          </button>
+        </form>
+      </div>
+      <div class="tab-pane fade" id="otp" role="tabpanel" aria-labelledby="otp-tab">
+        <form id="otpForm">
+          <div class="mb-3">
+            <input type="text" class="form-control form-input focusable" name="otp" placeholder="Enter OTP" required aria-label="OTP" tabindex="0">
+          </div>
+          <button type="submit" class="btn btn-primary w-100 focusable" tabindex="0">
+            <span id="otpSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+            Verify OTP
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Notepad Section -->
+  <section id="notepadSection" class="notepad-container glass-effect p-4" style="display: none;" aria-label="Secure Notepad">
+    <div class="row">
+      <!-- Notes Sidebar -->
+      <div class="col-md-4 col-lg-3">
+        <div class="d-flex justify-content-between mb-3">
+          <button class="btn btn-sm btn-primary focusable" onclick="toggleSidebar()" data-bs-toggle="tooltip" title="Toggle notes sidebar" tabindex="0">
+            <i class="bi bi-list"></i>
+          </button>
+          <input type="text" class="form-control glass-effect focusable" id="searchInput" placeholder="Search notes..." data-bs-toggle="tooltip" title="Search by title, content, or tags" aria-label="Search notes" tabindex="0">
+        </div>
+        <div class="list-group" id="notesList" aria-label="List of notes"></div>
+      </div>
+      <!-- Note Editor -->
+      <div class="col-md-8 col-lg-9">
+        <div class="card glass-effect">
+          <div class="card-body">
+            <h3><i class="bi bi-journal-text"></i> Secure Notepad</h3>
+            <!-- Note Title and Metadata -->
+            <div class="mb-3">
+              <input type="text" class="form-control glass-effect focusable" id="noteTitle" placeholder="Note Title" data-bs-toggle="tooltip" title="Enter a title for your note" aria-label="Note title" tabindex="0">
+            </div>
+            <div class="mb-3 d-flex gap-2">
+              <select class="form-select glass-effect focusable" id="noteCategory" aria-label="Note category" tabindex="0">
+                <option value="personal">Personal</option>
+                <option value="work">Work</option>
+                <option value="ideas">Ideas</option>
+                <option value="other">Other</option>
+              </select>
+              <select class="form-select glass-effect focusable" id="noteTemplate" onchange="applyTemplate(this.value)" aria-label="Note template" tabindex="0">
+                <option value="">No Template</option>
+                <option value="meeting">Meeting Notes</option>
+                <option value="todo">To-Do List</option>
+                <option value="journal">Journal Entry</option>
+              </select>
+            </div>
+            <!-- Tags Input -->
+            <div class="mb-3">
+              <input type="text" class="form-control glass-effect focusable" id="noteTags" placeholder="Add tags (e.g., #urgent #project)" data-bs-toggle="tooltip" title="Enter tags separated by spaces" aria-label="Note tags" tabindex="0">
+              <div id="tagsList" class="mt-2" aria-label="Selected tags"></div>
+            </div>
+            <!-- Formatting Toolbar -->
+            <div class="mb-3 d-flex gap-2">
+              <button class="btn btn-sm btn-secondary focusable" onclick="formatText('bold')" data-bs-toggle="tooltip" title="Bold text (**text**)" tabindex="0"><i class="bi bi-type-bold"></i></button>
+              <button class="btn btn-sm btn-secondary focusable" onclick="formatText('italic')" data-bs-toggle="tooltip" title="Italic text (*text*)" tabindex="0"><i class="bi bi-type-italic"></i></button>
+              <button class="btn btn-sm btn-secondary focusable" onclick="formatText('bullet')" data-bs-toggle="tooltip" title="Bullet list (- item)" tabindex="0"><i class="bi bi-list-ul"></i></button>
+            </div>
+            <!-- Note Content -->
+            <div class="mb-3">
+              <textarea class="note-editor form-control glass-effect focusable" id="noteContent" placeholder="Start writing (Markdown supported)..." aria-label="Note content" tabindex="0"></textarea>
+            </div>
+            <!-- Word and Character Count -->
+            <div class="mb-3 text-muted small" id="wordCount" aria-live="polite">Words: 0 | Characters: 0</div>
+            <!-- Date and File Upload -->
+            <div class="mb-3">
+              <input type="date" class="form-control glass-effect focusable" id="noteDate" aria-label="Note date" tabindex="0">
+            </div>
+            <div class="file-management mb-3">
+              <input type="file" id="fileUpload" hidden accept="image/*, .pdf, .txt, audio/*, video/*" aria-hidden="true">
+              <div class="d-flex gap-2">
+                <button class="btn btn-success focusable" onclick="document.getElementById('fileUpload').click()" data-bs-toggle="tooltip" title="Upload images, PDFs, or media" tabindex="0">Upload File</button>
+                <button class="btn btn-info focusable" id="recordButton" onclick="toggleRecording()" data-bs-toggle="tooltip" title="Record audio directly" tabindex="0">Record Audio</button>
+              </div>
+            </div>
+            <div id="noteMedia" class="mt-3 d-flex flex-wrap" aria-label="Attached media"></div>
+            <!-- Recordings -->
+            <div class="recordings-section mt-4">
+              <h4><i class="bi bi-music-note-beamed"></i> Recorded Audios</h4>
+              <div id="recordingsList" class="list-group" aria-label="List of recordings"></div>
+            </div>
+            <!-- Auto-Save Progress -->
+            <div class="progress mb-3">
+              <div class="progress-bar bg-info" id="autoSaveProgress" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <div id="autoSaveMessage" class="text-muted small mb-3" aria-live="polite"></div>
+            <!-- Action Buttons -->
+            <div class="d-flex flex-wrap gap-2">
+              <button class="btn btn-primary focusable" onclick="saveNote()" data-bs-toggle="tooltip" title="Save current note" tabindex="0">Save</button>
+              <button class="btn btn-secondary focusable" onclick="newNote()" data-bs-toggle="tooltip" title="Start a new note" tabindex="0">New Note</button>
+              <button class="btn btn-warning focusable" onclick="togglePinNote()" data-bs-toggle="tooltip" title="Pin/unpin note" tabindex="0" id="pinButton">Pin</button>
+              <button class="btn btn-info focusable" onclick="shareNote()" data-bs-toggle="tooltip" title="Generate shareable link" tabindex="0">Share</button>
+              <button class="btn btn-secondary focusable" onclick="viewNoteHistory()" data-bs-toggle="tooltip" title="View note edit history" tabindex="0">History</button>
+              <button class="btn btn-secondary focusable" onclick="exportNoteAsPDF()" data-bs-toggle="tooltip" title="Export note as PDF" tabindex="0">Export as PDF</button>
+              <button class="btn btn-secondary focusable" onclick="exportNotes()" data-bs-toggle="tooltip" title="Export all notes as JSON" tabindex="0">Export Notes</button>
+              <button class="btn btn-secondary focusable" onclick="importNotes()" data-bs-toggle="tooltip" title="Import notes from JSON" tabindex="0">Import Notes</button>
+              <button class="btn btn-danger focusable" onclick="logout()" data-bs-toggle="tooltip" title="Log out of Smartpad" tabindex="0">Logout</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Note History Modal -->
+    <div class="modal fade" id="noteHistoryModal" tabindex="-1" aria-labelledby="noteHistoryModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content glass-effect">
+          <div class="modal-header">
+            <h5 class="modal-title" id="noteHistoryModalLabel">Note History</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="noteHistoryContent"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Profile Section -->
+  <section id="profileSection" class="profile-container glass-effect p-4" style="display: none;" aria-label="User Profile">
+    <div class="card glass-effect">
+      <div class="card-body">
+        <h3><i class="bi bi-person-circle"></i> User Profile</h3>
+        <div class="text-center mb-4">
+          <img id="userAvatar" src="https://via.placeholder.com/100" class="user-avatar" alt="User Avatar" aria-hidden="true">
+          <input type="file" id="avatarUpload" hidden accept="image/*" aria-hidden="true">
+          <button class="btn btn-secondary mt-2 focusable" onclick="document.getElementById('avatarUpload').click()" data-bs-toggle="tooltip" title="Upload a new avatar" tabindex="0">Change Avatar</button>
+        </div>
+        <form id="profileForm">
+          <div class="mb-3">
+            <label class="form-label" for="profileUsername">Username</label>
+            <input type="text" class="form-control form-input focusable" id="profileUsername" disabled aria-label="Username" tabindex="0">
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="profileEmail">Email</label>
+            <input type="email" class="form-control form-input focusable" id="profileEmail" required aria-label="Email" tabindex="0">
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="profileContact">Contact Number</label>
+            <input type="tel" class="form-control form-input focusable" id="profileContact" required aria-label="Contact Number" tabindex="0">
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="themeSelect">Theme</label>
+            <select class="form-select form-input focusable" id="themeSelect" onchange="changeTheme(this.value)" aria-label="Theme selection" tabindex="0">
+              <option value="dark">Dark</option>
+              <option value="light">Light</option>
+              <option value="blue-nebula">Blue Nebula</option>
+              <option value="emerald-glow">Emerald Glow</option>
+              <option value="amethyst-dream">Amethyst Dream</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary focusable" tabindex="0">Save Changes</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Global State
+    let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+    let noteManager = null;
+    let userRecordings = [];
+    let isRecording = false;
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let currentNoteId = null;
+    let isNoteModified = false;
+    let calcState = {
+      currentNumber: '',
+      previousNumber: '',
+      operator: '',
+      memory: 0
+    };
+    let sessionTimeout = null;
+    let dynamicPin = localStorage.getItem('dynamicPin') || '1234';
+    let theme = localStorage.getItem('theme') || 'dark';
+    let activityLog = JSON.parse(localStorage.getItem('activityLog')) || [];
+
+    // Utility Functions
+    /**
+     * Shows a specific section by hiding others
+     * @param {string} sectionId - ID of the section to show
+     */
+    function showSection(sectionId) {
+      document.querySelectorAll('section').forEach(section => section.style.display = 'none');
+      document.getElementById(sectionId + 'Section').style.display = 'block';
+      resetSessionTimeout();
+      logActivity(`Navigated to ${sectionId} section`);
+    }
+
+    /**
+     * Displays a notification modal
+     * @param {string} message - Message to display
+     * @param {string} type - Type of alert (info, success, warning, danger)
+     */
+    function showNotification(message, type = 'info') {
+      const modal = new bootstrap.Modal(document.getElementById('notificationModal'));
+      const messageEl = document.getElementById('notificationMessage');
+      messageEl.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+      modal.show();
+      logActivity(`Notification shown: ${message}`);
+    }
+
+    /**
+     * Shows a spinner for loading states
+     * @param {string} id - ID of the spinner element
+     */
+    function showSpinner(id) {
+      document.getElementById(id).classList.remove('d-none');
+    }
+
+    /**
+     * Hides a spinner
+     * @param {string} id - ID of the spinner element
+     */
+    function hideSpinner(id) {
+      document.getElementById(id).classList.add('d-none');
+    }
+
+    /**
+     * Validates email format
+     * @param {string} email - Email to validate
+     * @returns {boolean} - True if valid
+     */
+    function validateEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    /**
+     * Validates password strength
+     * @param {string} password - Password to validate
+     * @returns {boolean} - True if strong
+     */
+    function validatePasswordStrength(password) {
+      const minLength = password.length >= 8;
+      const hasUpper = /[A-Z]/.test(password);
+      const hasLower = /[a-z]/.test(password);
+      const hasNumber = /\d/.test(password);
+      const hasSpecial = /[!@#$%^&*]/.test(password);
+      return minLength && hasUpper && hasLower && hasNumber && hasSpecial;
+    }
+
+    /**
+     * Generates a random string
+     * @param {number} length - Length of the string
+     * @returns {string} - Random string
+     */
+    function generateRandomString(length) {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      let result = '';
+      for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return result;
+    }
+
+    /**
+     * Simulates file compression
+     * @param {File} file - File to compress
+     * @returns {Promise} - Resolves with compressed file data
+     */
+    function compressFile(file) {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          resolve(file); // Simulated compression
+          logActivity(`Compressed file: ${file.name}`);
+        }, 500);
+      });
+    }
+
+    /**
+     * Highlights search terms in text
+     * @param {string} text - Text to highlight
+     * @param {string} term - Search term
+     * @returns {string} - Text with highlighted terms
+     */
+    function highlightSearchTerm(text, term) {
+      if (!term) return text;
+      const regex = new RegExp(`(${term})`, 'gi');
+      return text.replace(regex, '<mark>$1</mark>');
+    }
+
+    // Session Management
+    /**
+     * Resets the session timeout
+     */
+    function resetSessionTimeout() {
+      if (sessionTimeout) clearTimeout(sessionTimeout);
+      sessionTimeout = setTimeout(() => {
+        if (currentUser) {
+          logout();
+          showNotification('Session expired due to inactivity.', 'warning');
+        }
+      }, 10 * 60 * 1000); // 10 minutes
+      logActivity('Session timeout reset');
+    }
+
+    // Theme Management
+    /**
+     * Changes the application theme
+     * @param {string} newTheme - Theme to apply
+     */
+    function changeTheme(newTheme) {
+      theme = newTheme;
+      document.body.className = `${theme}-theme`;
+      localStorage.setItem('theme', theme);
+      document.getElementById('themeSelect').value = theme;
+      logActivity(`Theme changed to ${newTheme}`);
+    }
+
+    // Activity Logging
+    /**
+     * Logs user activity
+     * @param {string} action - Action to log
+     */
+    function logActivity(action) {
+      if (currentUser) {
+        activityLog.push({
+          user: currentUser.username,
+          action,
+          timestamp: new Date().toISOString()
+        });
+        localStorage.setItem('activityLog', JSON.stringify(activityLog));
+      }
+    }
+
+    // PIN Handling
+    /**
+     * Handles PIN form submission
+     * @param {Event} event - Form submission event
+     */
+    function handlePinSubmit(event) {
+      event.preventDefault();
+      showSpinner('pinSubmitSpinner');
+      const formData = new FormData(event.target);
+      const pin = formData.get('pin')?.trim();
+      const pinError = document.getElementById('pinError');
+      setTimeout(() => {
+        if (pin === dynamicPin) {
+          showSection('auth');
+          pinError.style.display = 'none';
+          event.target.reset();
+          logActivity('Successful PIN entry');
+        } else {
+          pinError.textContent = 'Incorrect PIN. Please try again.';
+          pinError.style.display = 'block';
+          logActivity('Failed PIN entry attempt');
+        }
+        hideSpinner('pinSubmitSpinner');
+      }, 500);
+    }
+
+    /**
+     * Resets the PIN (admin only)
+     */
+    function resetPin() {
+      if (currentUser?.role !== 'admin') {
+        showNotification('Only admins can reset the PIN.', 'danger');
+        return;
+      }
+      const newPin = prompt('Enter new 4-digit PIN:');
+      if (newPin && /^\d{4}$/.test(newPin)) {
+        dynamicPin = newPin;
+        localStorage.setItem('dynamicPin', newPin);
+        showNotification('PIN reset successfully.', 'success');
+        logActivity('PIN reset by admin');
+      } else {
+        showNotification('Invalid PIN format.', 'danger');
+        logActivity('Failed PIN reset attempt');
+      }
+    }
+
+    // Authentication
+    /**
+     * Handles login form submission
+     * @param {Event} event - Form submission event
+     */
+    function handleLogin(event) {
+      event.preventDefault();
+      showSpinner('loginSpinner');
+      const formData = new FormData(event.target);
+      const username = formData.get('username')?.trim();
+      const password = formData.get('password')?.trim();
+      const enable2FA = formData.get('enable2FA') === 'on';
+      const storedUsername = localStorage.getItem('username');
+      const storedHashedPassword = localStorage.getItem('hashedPassword');
+
+      setTimeout(() => {
+        if (!username || !password) {
+          showNotification('Username and password are required.', 'danger');
+          hideSpinner('loginSpinner');
+          logActivity('Failed login: Missing credentials');
+          return;
+        }
+
+        const hashedPassword = CryptoJS.SHA256(password).toString();
+        if (username === storedUsername && hashedPassword === storedHashedPassword) {
+          currentUser = JSON.parse(localStorage.getItem('userData')) || { username, role: 'user' };
+          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+          if (enable2FA) {
+            sendOTP(username);
+            document.getElementById('otp-tab').disabled = false;
+            document.getElementById('otp-tab').click();
+            logActivity('2FA enabled for login');
+          } else {
+            initializeUser();
+            showSection('notepad');
+            logActivity('Successful login');
+          }
+        } else {
+          showNotification('Invalid credentials.', 'danger');
+          logActivity('Failed login: Invalid credentials');
+        }
+        hideSpinner('loginSpinner');
+      }, 500);
+    }
+
+    /**
+     * Handles registration form submission
+     * @param {Event} event - Form submission event
+     */
+    function handleRegister(event) {
+      event.preventDefault();
+      showSpinner('registerSpinner');
+      const formData = new FormData(event.target);
+      const username = formData.get('username')?.trim();
+      const email = formData.get('email')?.trim();
+      const contact = formData.get('contact')?.trim();
+      const password = formData.get('password')?.trim();
+      const confirmPassword = formData.get('confirmPassword')?.trim();
+      const role = formData.get('role');
+
+      setTimeout(() => {
+        if (!username || !email || !contact || !password || !confirmPassword) {
+          showNotification('All fields are required.', 'danger');
+          hideSpinner('registerSpinner');
+          logActivity('Failed registration: Missing fields');
+          return;
+        }
+
+        if (!validateEmail(email)) {
+          showNotification('Invalid email format.', 'danger');
+          hideSpinner('registerSpinner');
+          logActivity('Failed registration: Invalid email');
+          return;
+        }
+
+        if (!validatePasswordStrength(password)) {
+          showNotification('Password must be at least 8 characters, include uppercase, lowercase, number, and special character.', 'danger');
+          hideSpinner('registerSpinner');
+          logActivity('Failed registration: Weak password');
+          return;
+        }
+
+        if (password !== confirmPassword) {
+          showNotification('Passwords do not match.', 'danger');
+          hideSpinner('registerSpinner');
+          logActivity('Failed registration: Password mismatch');
+          return;
+        }
+
+        const hashedPassword = CryptoJS.SHA256(password).toString();
+        localStorage.setItem('username', username);
+        localStorage.setItem('hashedPassword', hashedPassword);
+        localStorage.setItem('userData', JSON.stringify({ username, email, contact, role, avatar: 'https://via.placeholder.com/100' }));
+        showNotification('Registration successful. Please login.', 'success');
+        document.getElementById('login-tab')?.click();
+        event.target.reset();
+        hideSpinner('registerSpinner');
+        logActivity('Successful registration');
+      }, 500);
+    }
+
+    /**
+     * Sends an OTP for 2FA
+     * @param {string} username - Username for OTP
+     */
+    function sendOTP(username) {
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      localStorage.setItem('otp', otp);
+      showNotification(`OTP sent to ${username}: ${otp} (Simulated)`, 'info');
+      logActivity('OTP sent for 2FA');
+    }
+
+    /**
+     * Handles OTP form submission
+     * @param {Event} event - Form submission event
+     */
+    function handleOTP(event) {
+      event.preventDefault();
+      showSpinner('otpSpinner');
+      const formData = new FormData(event.target);
+      const otp = formData.get('otp')?.trim();
+      const storedOTP = localStorage.getItem('otp');
+
+      setTimeout(() => {
+        if (otp === storedOTP) {
+          localStorage.removeItem('otp');
+          document.getElementById('otp-tab').disabled = true;
+          initializeUser();
+          showSection('notepad');
+          logActivity('Successful OTP verification');
+        } else {
+          showNotification('Invalid OTP.', 'danger');
+          logActivity('Failed OTP verification');
+        }
+        hideSpinner('otpSpinner');
+      }, 500);
+    }
+
+    /**
+     * Logs in with Facebook (simulated)
+     */
+    function loginWithFacebook() {
+      const email = prompt('Enter your Facebook email:');
+      if (email && validateEmail(email)) {
+        currentUser = { username: email, provider: 'Facebook', role: 'user' };
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        localStorage.setItem('userData', JSON.stringify(currentUser));
+        initializeUser();
+        showSection('notepad');
+        logActivity('Logged in with Facebook');
+      } else {
+        showNotification('Invalid email.', 'danger');
+        logActivity('Failed Facebook login');
+      }
+    }
+
+    /**
+     * Logs in with Google (simulated)
+     */
+    function loginWithGoogle() {
+      const email = prompt('Enter your Google email:');
+      if (email && validateEmail(email)) {
+        currentUser = { username: email, provider: 'Google', role: 'user' };
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        localStorage.setItem('userData', JSON.stringify(currentUser));
+        initializeUser();
+        showSection('notepad');
+        logActivity('Logged in with Google');
+      } else {
+        showNotification('Invalid email.', 'danger');
+        logActivity('Failed Google login');
+      }
+    }
+
+    /**
+     * Logs out the user
+     */
+    function logout() {
+      localStorage.removeItem('currentUser');
+      currentUser = null;
+      noteManager = null;
+      document.getElementById('userMenu').style.display = 'none';
+      showSection('calculator');
+      logActivity('User logged out');
+    }
+
+    /**
+     * Initializes user data after login
+     */
+    function initializeUser() {
+      noteManager = new NoteManager(currentUser.username);
+      userRecordings = JSON.parse(localStorage.getItem('recordings_' + currentUser.username)) || [];
+      document.getElementById('userMenu').style.display = 'block';
+      document.getElementById('userName').textContent = currentUser.username;
+      noteManager.renderNotes();
+      renderRecordings();
+      updateProfileForm();
+      resetSessionTimeout();
+      logActivity('User initialized');
+    }
+
+    // Calculator Functions
+    /**
+     * Clears the calculator display
+     */
+    function clearDisplay() {
+      calcState.currentNumber = '';
+      calcState.previousNumber = '';
+      calcState.operator = '';
+      updateDisplay();
+      logActivity('Calculator cleared');
+    }
+
+    /**
+     * Appends a number to the calculator
+     * @param {string} num - Number to append
+     */
+    function appendNumber(num) {
+      if (calcState.currentNumber.length < 15) {
+        calcState.currentNumber += num;
+        updateDisplay();
+        logActivity(`Calculator input: ${num}`);
+      }
+    }
+
+    /**
+     * Appends an operator to the calculator
+     * @param {string} op - Operator to append
+     */
+    function appendOperator(op) {
+      if (calcState.currentNumber !== '') {
+        calcState.previousNumber = calcState.currentNumber;
+        calcState.currentNumber = '';
+        calcState.operator = op;
+        updateDisplay();
+        logActivity(`Calculator operator: ${op}`);
+      }
+    }
+
+    /**
+     * Performs the calculation
+     */
+    function calculate() {
+      const prev = parseFloat(calcState.previousNumber);
+      const curr = parseFloat(calcState.currentNumber);
+      if (isNaN(prev) || isNaN(curr)) return;
+      let result;
+      switch (calcState.operator) {
+        case '+': result = prev + curr; break;
+        case '-': result = prev - curr; break;
+        case '*': result = prev * curr; break;
+        case '/': result = prev / curr; break;
+        case 'pow': result = Math.pow(prev, curr); break;
+        default: return;
+      }
+      calcState.currentNumber = result.toString();
+      calcState.operator = '';
+      calcState.previousNumber = '';
+      updateDisplay();
+      logActivity('Calculator result calculated');
+    }
+
+    /**
+     * Updates the calculator display
+     */
+    function updateDisplay() {
+      document.getElementById('display').textContent = calcState.currentNumber || '0';
+      document.getElementById('memoryIndicator').textContent = calcState.memory !== 0 ? 'M' : '';
+    }
+
+    /**
+     * Removes the last character from the current number
+     */
+    function backspace() {
+      calcState.currentNumber = calcState.currentNumber.slice(0, -1);
+      updateDisplay();
+      logActivity('Calculator backspace');
+    }
+
+    /**
+     * Handles scientific functions
+     * @param {string} op - Scientific operation
+     */
+    function handleScientific(op) {
+      if (op === 'pow') {
+        if (calcState.currentNumber !== '') {
+          calcState.previousNumber = calcState.currentNumber;
+          calcState.currentNumber = '';
+          calcState.operator = 'pow';
+          updateDisplay();
+          logActivity('Calculator power operation');
+        }
+        return;
+      }
+      const num = parseFloat(calcState.currentNumber);
+      if (isNaN(num)) return;
+      let result;
+      switch (op) {
+        case 'sin': result = Math.sin(num); break;
+        case 'cos': result = Math.cos(num); break;
+        case 'tan': result = Math.tan(num); break;
+        case 'log': result = Math.log10(num); break;
+        case 'sqrt': result = Math.sqrt(num); break;
+        case 'exp': result = Math.exp(num); break;
+        case 'pow10': result = Math.pow(10, num); break;
+        case 'ln': result = Math.log(num); break;
+      }
+      calcState.currentNumber = result.toString();
+      updateDisplay();
+      logActivity(`Calculator scientific: ${op}`);
+    }
+
+    /**
+     * Clears the calculator memory
+     */
+    function memoryClear() {
+      calcState.memory = 0;
+      updateDisplay();
+      logActivity('Calculator memory cleared');
+    }
+
+    /**
+     * Recalls the calculator memory
+     */
+    function memoryRecall() {
+      calcState.currentNumber = calcState.memory.toString();
+      updateDisplay();
+      logActivity('Calculator memory recalled');
+    }
+
+    /**
+     * Adds to the calculator memory
+     */
+    function memoryAdd() {
+      if (calcState.currentNumber !== '') {
+        calcState.memory += parseFloat(calcState.currentNumber);
+        updateDisplay();
+        logActivity('Calculator memory added');
+      }
+    }
+
+    /**
+     * Subtracts from the calculator memory
+     */
+    function memorySubtract() {
+      if (calcState.currentNumber !== '') {
+        calcState.memory -= parseFloat(calcState.currentNumber);
+        updateDisplay();
+        logActivity('Calculator memory subtracted');
+      }
+    }
+
+    // Note Management
+    /**
+     * Manages notes for a user
+     */
+    class NoteManager {
+      constructor(username) {
+        this.username = username;
+        this.storageKey = 'secureNotes_' + username;
+        this.notes = JSON.parse(localStorage.getItem(this.storageKey)) || [];
+        logActivity('NoteManager initialized');
+      }
+
+      /**
+       * Adds a new note
+       * @param {string} title - Note title
+       * @param {string} content - Note content
+       * @param {string} category - Note category
+       * @param {Array} tags - Note tags
+       * @param {string} template - Note template
+       * @returns {Object} - New note
+       */
+      addNote(title, content, category, tags = [], template = '') {
+        const note = {
+          id: Date.now(),
+          title: title || 'Untitled',
+          content: encryptNote(content, this.username),
+          date: new Date().toISOString(),
+          media: [],
+          category: category || 'personal',
+          tags: tags,
+          pinned: false,
+          history: [{ content: encryptNote(content, this.username), timestamp: new Date().toISOString() }],
+          template: template
+        };
+        this.notes.push(note);
+        this.save();
+        logActivity(`Note added: ${title}`);
+        return note;
+      }
+
+      /**
+       * Updates an existing note
+       * @param {number} id - Note ID
+       * @param {string} title - Note title
+       * @param {string} content - Note content
+       * @param {string} category - Note category
+       * @param {Array} tags - Note tags
+       * @param {boolean} pinned - Pinned status
+       * @param {string} template - Note template
+       */
+      updateNote(id, title, content, category, tags, pinned, template) {
+        const note = this.notes.find(n => n.id === id);
+        if (note) {
+          const encryptedContent = encryptNote(content, this.username);
+          note.title = title || 'Untitled';
+          note.content = encryptedContent;
+          note.date = new Date().toISOString();
+          note.category = category || note.category;
+          note.tags = tags || note.tags;
+          note.pinned = pinned !== undefined ? pinned : note.pinned;
+          note.template = template || note.template;
+          note.history = note.history || [];
+          if (note.history.length >= 3) note.history.shift();
+          note.history.push({ content: encryptedContent, timestamp: new Date().toISOString() });
+          this.save();
+          logActivity(`Note updated: ${title}`);
+        }
+      }
+
+      /**
+       * Deletes a note
+       * @param {number} id - Note ID
+       */
+      deleteNote(id) {
+        this.notes = this.notes.filter(n => n.id !== id);
+        this.save();
+        logActivity(`Note deleted: ${id}`);
+      }
+
+      /**
+       * Saves notes to localStorage
+       */
+      save() {
+        localStorage.setItem(this.storageKey, JSON.stringify(this.notes));
+      }
+
+      /**
+       * Renders the notes list
+       */
+      renderNotes() {
+        const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+        const filteredNotes = this.notes.filter(note => {
+          const decryptedContent = decryptNote(note.content, this.username).toLowerCase();
+          const tagsMatch = note.tags.some(tag => tag.toLowerCase().includes(searchTerm));
+          return (
+            note.title.toLowerCase().includes(searchTerm) ||
+            decryptedContent.includes(searchTerm) ||
+            tagsMatch
+          );
+        });
+        filteredNotes.sort((a, b) => {
+          if (a.pinned && !b.pinned) return -1;
+          if (!a.pinned && b.pinned) return 1;
+          return new Date(b.date) - new Date(a.date);
+        });
+        const container = document.getElementById('notesList');
+        if (container) {
+          container.innerHTML = filteredNotes.map(note => {
+            const decryptedContent = decryptNote(note.content, this.username);
+            const highlightedTitle = highlightSearchTerm(note.title, searchTerm);
+            const highlightedContent = highlightSearchTerm(decryptedContent.substring(0, 100), searchTerm);
+            const tagBadges = note.tags.map(tag => `<span class="badge bg-secondary me-1">${tag}</span>`).join('');
+            return `
+              <div class="card note-card mb-2">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                  <a href="#" onclick="loadNote(${note.id})" class="text-decoration-none focusable flex-grow-1" tabindex="0">
+                    <strong>${highlightedTitle}</strong> ${note.pinned ? '<i class="bi bi-pin-angle-fill text-warning"></i>' : ''} <br>
+                    <small>${highlightedContent}...</small> <br>
+                    <small>${new Date(note.date).toLocaleString()} | ${note.category}</small> <br>
+                    ${tagBadges}
+                  </a>
+                  <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-info focusable" onclick="shareNote(${note.id})" tabindex="0" data-bs-toggle="tooltip" title="Share note"><i class="bi bi-share"></i></button>
+                    <button class="btn btn-sm btn-danger focusable" onclick="noteManager.deleteNote(${note.id}); noteManager.renderNotes()" tabindex="0">Delete</button>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+    }
+
+    // Notepad Utility Functions
+    /**
+     * Toggles the notes sidebar visibility
+     */
+    function toggleSidebar() {
+      const sidebar = document.getElementById('notesList').parentElement;
+      sidebar.classList.toggle('d-none');
+      logActivity('Notes sidebar toggled');
+    }
+
+    /**
+     * Applies a note template
+     * @param {string} template - Template type
+     */
+    function applyTemplate(template) {
+      const contentEl = document.getElementById('noteContent');
+      switch (template) {
+        case 'meeting':
+          contentEl.value = `# Meeting Notes\n**Date:** ${new Date().toLocaleDateString()}\n**Attendees:** \n**Agenda:**\n- \n**Notes:**\n- \n**Action Items:**\n- `;
+          break;
+        case 'todo':
+          contentEl.value = `# To-Do List\n- [ ] Task 1\n- [ ] Task 2\n- [ ] Task 3`;
+          break;
+        case 'journal':
+          contentEl.value = `# Journal Entry\n**Date:** ${new Date().toLocaleDateString()}\n**Mood:** \n**Thoughts:**\n`;
+          break;
+        default:
+          contentEl.value = '';
+      }
+      isNoteModified = true;
+      updateWordCount();
+      logActivity(`Template applied: ${template}`);
+    }
+
+    /**
+     * Formats selected text with Markdown
+     * @param {string} type - Formatting type (bold, italic, bullet)
+     */
+    function formatText(type) {
+      const textarea = document.getElementById('noteContent');
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const selectedText = textarea.value.substring(start, end) || 'text';
+      let newText = '';
+      switch (type) {
+        case 'bold':
+          newText = `**${selectedText}**`;
+          break;
+        case 'italic':
+          newText = `*${selectedText}*`;
+          break;
+        case 'bullet':
+          newText = `- ${selectedText}`;
+          break;
+      }
+      textarea.value = textarea.value.substring(0, start) + newText + textarea.value.substring(end);
+      isNoteModified = true;
+      updateWordCount();
+      logActivity(`Text formatted: ${type}`);
+    }
+
+    /**
+     * Updates word and character count for note content
+     */
+    function updateWordCount() {
+      const content = document.getElementById('noteContent').value;
+      const words = content.trim().split(/\s+/).filter(w => w.length > 0).length;
+      const chars = content.length;
+      document.getElementById('wordCount').textContent = `Words: ${words} | Characters: ${chars}`;
+    }
+
+    /**
+     * Toggles pinning of the current note
+     */
+    function togglePinNote() {
+      if (!currentNoteId) {
+        showNotification('Please select or create a note first.', 'warning');
+        return;
+      }
+      const note = noteManager.notes.find(n => n.id === currentNoteId);
+      if (note) {
+        note.pinned = !note.pinned;
+        noteManager.save();
+        noteManager.renderNotes();
+        document.getElementById('pinButton').textContent = note.pinned ? 'Unpin' : 'Pin';
+        showNotification(note.pinned ? 'Note pinned.' : 'Note unpinned.', 'success');
+        logActivity(`Note ${note.pinned ? 'pinned' : 'unpinned'}: ${note.title}`);
+      }
+    }
+
+    /**
+     * Generates a shareable link for a note
+     * @param {number} noteId - Note ID
+     */
+    function shareNote(noteId = currentNoteId) {
+      if (!noteId) {
+        showNotification('Please select or create a note first.', 'warning');
+        return;
+      }
+      const note = noteManager.notes.find(n => n.id === noteId);
+      if (note) {
+        const shareLink = `https://smartpad.pro/share/${note.id}?token=${generateRandomString(16)}`;
+        navigator.clipboard.writeText(shareLink).then(() => {
+          showNotification(`Shareable link copied to clipboard: ${shareLink}`, 'success');
+          logActivity(`Note shared: ${note.title}`);
+        });
+      }
+    }
+
+    /**
+     * Displays note edit history in a modal
+     */
+    function viewNoteHistory() {
+      if (!currentNoteId) {
+        showNotification('Please select or create a note first.', 'warning');
+        return;
+      }
+      const note = noteManager.notes.find(n => n.id === currentNoteId);
+      if (note && note.history) {
+        const modal = new bootstrap.Modal(document.getElementById('noteHistoryModal'));
+        const contentEl = document.getElementById('noteHistoryContent');
+        contentEl.innerHTML = note.history.map((entry, index) => `
+          <div class="card mb-2">
+            <div class="card-body">
+              <strong>Version ${note.history.length - index}</strong> - ${new Date(entry.timestamp).toLocaleString()}
+              <p>${marked.parse(decryptNote(entry.content, noteManager.username))}</p>
+              <button class="btn btn-sm btn-primary focusable" onclick="restoreHistory(${note.id}, ${index})" tabindex="0">Restore</button>
+            </div>
+          </div>
+        `).join('');
+        modal.show();
+        logActivity(`Viewed history for note: ${note.title}`);
+      } else {
+        showNotification('No history available for this note.', 'info');
+      }
+    }
+
+    /**
+     * Restores a note version from history
+     * @param {number} noteId - Note ID
+     * @param {number} historyIndex - History index
+     */
+    function restoreHistory(noteId, historyIndex) {
+      const note = noteManager.notes.find(n => n.id === noteId);
+      if (note && note.history[historyIndex]) {
+        document.getElementById('noteContent').value = decryptNote(note.history[historyIndex].content, noteManager.username);
+        isNoteModified = true;
+        updateWordCount();
+        showNotification('History version restored.', 'success');
+        logActivity(`History restored for note: ${note.title}`);
+      }
+    }
+
+    /**
+     * Exports the current note as a PDF
+     */
+    function exportNoteAsPDF() {
+      if (!currentNoteId) {
+        showNotification('Please select or create a note first.', 'warning');
+        return;
+      }
+      const note = noteManager.notes.find(n => n.id === currentNoteId);
+      if (note) {
+        const content = marked.parse(decryptNote(note.content, noteManager.username));
+        const blob = new Blob([`
+          <html>
+            <head><title>${note.title}</title></head>
+            <body>
+              <h1>${note.title}</h1>
+              <p><strong>Category:</strong> ${note.category}</p>
+              <p><strong>Tags:</strong> ${note.tags.join(', ')}</p>
+              <p><strong>Date:</strong> ${new Date(note.date).toLocaleString()}</p>
+              <div>${content}</div>
+            </body>
+          </html>
+        `], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${note.title}.pdf`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showNotification('Note exported as PDF.', 'success');
+        logActivity(`Note exported as PDF: ${note.title}`);
+      }
+    }
+
+    /**
+     * Saves the current note
+     * @param {boolean} autoSave - Whether it's an auto-save
+     */
+    function saveNote(autoSave = false) {
+      const title = document.getElementById('noteTitle')?.value;
+      const content = document.getElementById('noteContent')?.value;
+      const category = document.getElementById('noteCategory')?.value;
+      const tags = document.getElementById('noteTags')?.value.split(' ').filter(tag => tag.trim().startsWith('#')).map(tag => tag.trim());
+      const template = document.getElementById('noteTemplate')?.value;
+      if (content) {
+        if (currentNoteId) {
+          const note = noteManager.notes.find(n => n.id === currentNoteId);
+          noteManager.updateNote(currentNoteId, title, content, category, tags, note.pinned, template);
+        } else {
+          const newNote = noteManager.addNote(title, content, category, tags, template);
+          currentNoteId = newNote.id;
+        }
+        noteManager.renderNotes();
+        if (!autoSave) {
+          clearNoteEditor();
+          showNotification('Note saved successfully.', 'success');
+        }
+      } else {
+        showNotification('Note content cannot be empty.', 'warning');
+      }
+    }
+
+    /**
+     * Loads a note into the editor
+     * @param {number} id - Note ID
+     */
+    function loadNote(id) {
+      const note = noteManager.notes.find(n => n.id === id);
+      if (note) {
+        document.getElementById('noteTitle').value = note.title;
+        document.getElementById('noteContent').value = decryptNote(note.content, noteManager.username);
+        document.getElementById('noteCategory').value = note.category;
+        document.getElementById('noteTags').value = note.tags.join(' ');
+        document.getElementById('noteTemplate').value = note.template || '';
+        document.getElementById('pinButton').textContent = note.pinned ? 'Unpin' : 'Pin';
+        renderNoteMedia(note.media);
+        renderTags(note.tags);
+        currentNoteId = id;
+        isNoteModified = false;
+        document.getElementById('autoSaveMessage').textContent = '';
+        updateWordCount();
+        logActivity(`Note loaded: ${note.title}`);
+      }
+    }
+
+    /**
+     * Creates a new note
+     */
+    function newNote() {
+      clearNoteEditor();
+      currentNoteId = null;
+      isNoteModified = false;
+      document.getElementById('pinButton').textContent = 'Pin';
+      document.getElementById('noteTemplate').value = '';
+      logActivity('New note started');
+    }
+
+    /**
+     * Clears the note editor
+     */
+    function clearNoteEditor() {
+      document.getElementById('noteTitle').value = '';
+      document.getElementById('noteContent').value = '';
+      document.getElementById('noteCategory').value = 'personal';
+      document.getElementById('noteTags').value = '';
+      document.getElementById('noteTemplate').value = '';
+      document.getElementById('noteDate').value = '';
+      document.getElementById('noteMedia').innerHTML = '';
+      document.getElementById('tagsList').innerHTML = '';
+      updateWordCount();
+      logActivity('Note editor cleared');
+    }
+
+    /**
+     * Renders tags as badges
+     * @param {Array} tags - Array of tags
+     */
+    function renderTags(tags) {
+      const tagsList = document.getElementById('tagsList');
+      tagsList.innerHTML = tags.map(tag => `<span class="badge bg-primary me-1">${tag}</span>`).join('');
+    }
+
+    /**
+     * Renders media attached to a note
+     * @param {Array} media - Array of media objects
+     */
+    function renderNoteMedia(media) {
+      const container = document.getElementById('noteMedia');
+      container.innerHTML = media.map(item => {
+        if (item.type.startsWith('image')) {
+          return `<img src="${item.url}" class="media-preview" alt="Note image" data-id="${item.id}" onclick="openMedia('${item.url}', '${item.type}')">`;
+        } else if (item.type.startsWith('video')) {
+          return `<video src="${item.url}" class="media-preview" controls data-id="${item.id}" alt="Note video"></video>`;
+        } else if (item.type.startsWith('audio')) {
+          return `<audio src="${item.url}" class="recording-preview" controls data-id="${item.id}" alt="Note audio"></audio>`;
+        } else {
+          return `<a href="${item.url}" class="media-preview" data-id="${item.id}" download>Download ${item.name}</a>`;
+        }
+      }).join('');
+    }
+
+    /**
+     * Opens media in a new window or modal
+     * @param {string} url - Media URL
+     * @param {string} type - Media type
+     */
+    function openMedia(url, type) {
+      if (type.startsWith('image')) {
+        const modal = new bootstrap.Modal(document.createElement('div'));
+        const modalContent = `
+          <div class="modal fade" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content glass-effect">
+                <div class="modal-header">
+                  <h5 class="modal-title">Image Preview</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                  <img src="${url}" style="max-width: 100%;" alt="Full-size image">
+                </div>
+              </div>
+            </div>
+          </div>`;
+        document.body.insertAdjacentHTML('beforeend', modalContent);
+        modal.show();
+        logActivity('Image preview opened');
+      } else {
+        window.open(url, '_blank');
+        logActivity(`Media opened: ${type}`);
+      }
+    }
+
+    /**
+     * Exports all notes as JSON
+     */
+    function exportNotes() {
+      if (!noteManager.notes.length) {
+        showNotification('No notes to export.', 'warning');
+        return;
+      }
+      const data = JSON.stringify(noteManager.notes, null, 2);
+      const blob = new Blob([data], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'smartpad_notes.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      showNotification('Notes exported successfully.', 'success');
+      logActivity('Notes exported as JSON');
+    }
+
+    /**
+     * Imports notes from a JSON file
+     */
+    function importNotes() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'application/json';
+      input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          try {
+            const text = await file.text();
+            const importedNotes = JSON.parse(text);
+            if (Array.isArray(importedNotes)) {
+              noteManager.notes = importedNotes;
+              noteManager.save();
+              noteManager.renderNotes();
+              showNotification('Notes imported successfully.', 'success');
+              logActivity('Notes imported from JSON');
+            } else {
+              showNotification('Invalid notes format.', 'danger');
+              logActivity('Failed to import notes: Invalid format');
+            }
+          } catch (err) {
+            showNotification('Error importing notes.', 'danger');
+            logActivity(`Import error: ${err.message}`);
+          }
+        }
+      };
+      input.click();
+    }
+
+    /**
+     * Encrypts note content
+     * @param {string} content - Content to encrypt
+     * @param {string} key - Encryption key
+     * @returns {string} - Encrypted content
+     */
+    function encryptNote(content, key) {
+      try {
+        return CryptoJS.AES.encrypt(content, key).toString();
+      } catch (err) {
+        showNotification('Encryption failed.', 'danger');
+        logActivity(`Encryption error: ${err.message}`);
+        return content;
+      }
+    }
+
+    /**
+     * Decrypts note content
+     * @param {string} content - Encrypted content
+     * @param {string} key - Decryption key
+     * @returns {string} - Decrypted content
+     */
+    function decryptNote(content, key) {
+      try {
+        const bytes = CryptoJS.AES.decrypt(content, key);
+        return bytes.toString(CryptoJS.enc.Utf8) || content;
+      } catch (err) {
+        showNotification('Decryption failed.', 'danger');
+        logActivity(`Decryption error: ${err.message}`);
+        return content;
+      }
+    }
+
+    /**
+     * Handles file uploads for notes
+     */
+    async function handleFileUpload() {
+      const fileInput = document.getElementById('fileUpload');
+      const files = fileInput.files;
+      if (files.length === 0) return;
+      for (const file of files) {
+        const compressedFile = await compressFile(file);
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const mediaItem = {
+            id: Date.now(),
+            name: file.name,
+            type: file.type,
+            url: e.target.result
+          };
+          const note = noteManager.notes.find(n => n.id === currentNoteId);
+          if (note) {
+            note.media = note.media || [];
+            note.media.push(mediaItem);
+            noteManager.save();
+            renderNoteMedia(note.media);
+          } else {
+            showNotification('Please save the note before adding media.', 'warning');
+          }
+          logActivity(`File uploaded: ${file.name}`);
+        };
+        reader.readAsDataURL(compressedFile);
+      }
+      fileInput.value = '';
+    }
+
+    /**
+     * Toggles audio recording
+     */
+    async function toggleRecording() {
+      if (!isRecording) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaRecorder = new MediaRecorder(stream);
+          audioChunks = [];
+          mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
+          mediaRecorder.onstop = saveRecording;
+          mediaRecorder.start();
+          isRecording = true;
+          document.getElementById('recordButton').classList.add('btn-danger');
+          document.getElementById('recordButton').textContent = 'Stop Recording';
+          showNotification('Recording started.', 'info');
+          logActivity('Audio recording started');
+        } catch (err) {
+          showNotification('Failed to access microphone.', 'danger');
+          logActivity(`Recording error: ${err.message}`);
+        }
+      } else {
+        mediaRecorder.stop();
+        isRecording = false;
+        document.getElementById('recordButton').classList.remove('btn-danger');
+        document.getElementById('recordButton').textContent = 'Record Audio';
+        showNotification('Recording stopped.', 'info');
+        logActivity('Audio recording stopped');
+      }
+    }
+
+    /**
+     * Saves the recorded audio
+     */
+    function saveRecording() {
+      const blob = new Blob(audioChunks, { type: 'audio/webm' });
+      const url = URL.createObjectURL(blob);
+      const recording = {
+        id: Date.now(),
+        url,
+        date: new Date().toISOString()
+      };
+      userRecordings.push(recording);
+      localStorage.setItem('recordings_' + currentUser.username, JSON.stringify(userRecordings));
+      renderRecordings();
+      const note = noteManager.notes.find(n => n.id === currentNoteId);
+      if (note) {
+        note.media = note.media || [];
+        note.media.push({ id: recording.id, name: `Recording_${recording.id}`, type: 'audio/webm', url });
+        noteManager.save();
+        renderNoteMedia(note.media);
+      }
+      logActivity('Audio recording saved');
+    }
+
+    /**
+     * Renders the recordings list
+     */
+    function renderRecordings() {
+      const container = document.getElementById('recordingsList');
+      container.innerHTML = userRecordings.map(rec => `
+        <div class="card recording-card mb-2">
+          <div class="card-body d-flex justify-content-between align-items-center">
+            <div>
+              <audio src="${rec.url}" controls class="recording-preview" alt="Audio recording"></audio>
+              <small>${new Date(rec.date).toLocaleString()}</small>
+            </div>
+            <button class="btn btn-sm btn-danger focusable" onclick="deleteRecording(${rec.id})" tabindex="0">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    /**
+     * Deletes a recording
+     * @param {number} id - Recording ID
+     */
+    function deleteRecording(id) {
+      userRecordings = userRecordings.filter(rec => rec.id !== id);
+      localStorage.setItem('recordings_' + currentUser.username, JSON.stringify(userRecordings));
+      renderRecordings();
+      noteManager.notes.forEach(note => {
+        note.media = note.media.filter(m => m.id !== id);
+      });
+      noteManager.save();
+      if (currentNoteId) {
+        const note = noteManager.notes.find(n => n.id === currentNoteId);
+        renderNoteMedia(note.media);
+      }
+      showNotification('Recording deleted.', 'success');
+      logActivity(`Recording deleted: ${id}`);
+    }
+
+    /**
+     * Updates the profile form with user data
+     */
+    function updateProfileForm() {
+      const userData = JSON.parse(localStorage.getItem('userData')) || {};
+      document.getElementById('profileUsername').value = currentUser.username;
+      document.getElementById('profileEmail').value = userData.email || '';
+      document.getElementById('profileContact').value = userData.contact || '';
+      document.getElementById('userAvatar').src = userData.avatar || 'https://via.placeholder.com/100';
+      document.getElementById('themeSelect').value = theme;
+    }
+
+    /**
+     * Handles profile form submission
+     * @param {Event} event - Form submission event
+     */
+    function handleProfileSubmit(event) {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      const email = formData.get('profileEmail')?.trim();
+      const contact = formData.get('profileContact')?.trim();
+      if (!validateEmail(email)) {
+        showNotification('Invalid email format.', 'danger');
+        logActivity('Profile update failed: Invalid email');
+        return;
+      }
+      const userData = JSON.parse(localStorage.getItem('userData')) || {};
+      userData.email = email;
+      userData.contact = contact;
+      localStorage.setItem('userData', JSON.stringify(userData));
+      showNotification('Profile updated successfully.', 'success');
+      logActivity('Profile updated');
+    }
+
+    /**
+     * Handles avatar upload
+     */
+    function handleAvatarUpload() {
+      const fileInput = document.getElementById('avatarUpload');
+      const file = fileInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const userData = JSON.parse(localStorage.getItem('userData')) || {};
+          userData.avatar = e.target.result;
+          localStorage.setItem('userData', JSON.stringify(userData));
+          document.getElementById('userAvatar').src = userData.avatar;
+          showNotification('Avatar updated successfully.', 'success');
+          logActivity('Avatar updated');
+        };
+        reader.readAsDataURL(file);
+      }
+      fileInput.value = '';
+    }
+
+    /**
+     * Auto-saves the note periodically
+     */
+    function autoSaveNote() {
+      if (isNoteModified && document.getElementById('noteContent').value) {
+        saveNote(true);
+        const progressBar = document.getElementById('autoSaveProgress');
+        progressBar.style.width = '100%';
+        document.getElementById('autoSaveMessage').textContent = `Auto-saved at ${new Date().toLocaleTimeString()}`;
+        setTimeout(() => {
+          progressBar.style.width = '0%';
+        }, 1000);
+        logActivity('Note auto-saved');
+      }
+    }
+
+    /**
+     * Sets up all event listeners
+     */
+    function setupEventListeners() {
+      // PIN Form
+      document.getElementById('pinForm')?.addEventListener('submit', handlePinSubmit);
+      // Authentication Forms
+      document.getElementById('loginForm')?.addEventListener('submit', handleLogin);
+      document.getElementById('registerForm')?.addEventListener('submit', handleRegister);
+      document.getElementById('otpForm')?.addEventListener('submit', handleOTP);
+      // Profile Form
+      document.getElementById('profileForm')?.addEventListener('submit', handleProfileSubmit);
+      // File Uploads
+      document.getElementById('fileUpload')?.addEventListener('change', handleFileUpload);
+      document.getElementById('avatarUpload')?.addEventListener('change', handleAvatarUpload);
+      // Notepad Event Listeners
+      document.getElementById('searchInput')?.addEventListener('input', () => noteManager.renderNotes());
+      document.getElementById('noteContent')?.addEventListener('input', () => {
+        isNoteModified = true;
+        updateWordCount();
+      });
+      document.getElementById('noteTitle')?.addEventListener('input', () => isNoteModified = true);
+      document.getElementById('noteCategory')?.addEventListener('change', () => isNoteModified = true);
+      document.getElementById('noteTags')?.addEventListener('input', () => {
+        isNoteModified = true;
+        const tags = document.getElementById('noteTags').value.split(' ').filter(tag => tag.trim().startsWith('#')).map(tag => tag.trim());
+        renderTags(tags);
+      });
+      // Auto-Save
+      setInterval(autoSaveNote, 30000); // Every 30 seconds
+      // Password Strength
+      document.getElementById('regPassword')?.addEventListener('input', (e) => {
+        const password = e.target.value;
+        const strengthEl = document.getElementById('passwordStrength');
+        if (password.length === 0) {
+          strengthEl.textContent = '';
+        } else if (validatePasswordStrength(password)) {
+          strengthEl.textContent = 'Strong password';
+          strengthEl.className = 'text-success small mt-1';
+        } else {
+          strengthEl.textContent = 'Weak password';
+          strengthEl.className = 'text-danger small mt-1';
+        }
+      });
+      // Theme Persistence
+      changeTheme(theme);
+      // Keyboard Accessibility
+      document.querySelectorAll('.focusable').forEach(el => {
+        el.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            el.click();
+          }
+        });
+      });
+      logActivity('Event listeners set up');
+    }
+
+    // Initialization
+    document.addEventListener('DOMContentLoaded', () => {
+      // Hide Splash Screen
+      setTimeout(() => {
+        document.getElementById('splashScreen').style.display = 'none';
+      }, 2000);
+      // Initialize Tooltips and Popovers
+      document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
+      document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => new bootstrap.Popover(el));
+      // Check if User is Logged In
+      if (currentUser) {
+        initializeUser();
+        showSection('notepad');
+      } else {
+        showSection('calculator');
+      }
+      // Setup Event Listeners
+      setupEventListeners();
+      logActivity('Application initialized');
+    });
+
+    // Placeholder for Future Enhancements
+    /**
+     * Placeholder for cloud sync functionality
+     */
+    function syncNotesToCloud() {
+      console.log('Cloud sync not implemented in this version.');
+      logActivity('Attempted cloud sync (placeholder)');
+    }
+
+    /**
+     * Placeholder for real-time collaboration
+     */
+    function enableCollaboration() {
+      console.log('Collaboration not implemented in this version.');
+      logActivity('Attempted collaboration (placeholder)');
+    }
+
+    /**
+     * Placeholder for advanced analytics
+     */
+    function generateNoteAnalytics() {
+      console.log('Analytics not implemented in this version.');
+      logActivity('Attempted analytics (placeholder)');
+    }
+
+    /**
+     * Placeholder for offline support
+     */
+    function enableOfflineMode() {
+      console.log('Offline mode not implemented in this version.');
+      logActivity('Attempted offline mode (placeholder)');
+    }
+
+    /**
+     * Placeholder for AI-powered suggestions
+     */
+    function suggestNoteContent() {
+      console.log('AI suggestions not implemented in this version.');
+      logActivity('Attempted AI suggestions (placeholder)');
+    }
+  </script>
+</body>  
+</html>
